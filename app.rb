@@ -1,25 +1,23 @@
 require 'sinatra'
 require 'slim'
 require 'sinatra/reloader'
-
-get('/') do
-  slim(:start)
-
-end
-
-get('/bye') do
-  slim(:bye)
-
-end
-
-get ('/name') do
-  @name = "Jim"
-  slim(:name)
-
-end
+require 'sqlite3'
 
 get('/fruits') do
- @fruits = ["Äpple",
-"Banan","Apelsin"]
- slim(:fruits)
+  #gör koppling till db
+  db = SQLite3::Database.new("db/fruits.db")
+
+  #[{},{},{}] önskar vi oss istället för [[], [],[]]
+  db.results_as_hash = true
+
+  #hämta allting från db
+  @datafruit = db.execute("SELECT * FROM fruits")
+
+  p @datafruit
+
+  #visa med slim
+  slim(:"fruits/index")
+
 end
+
+
